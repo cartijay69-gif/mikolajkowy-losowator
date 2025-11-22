@@ -48,8 +48,27 @@ export class DbStorage implements IStorage {
   }
 
   async getParticipantByName(name: string): Promise<Participant | undefined> {
-    const result = await db.select().from(participants).where(eq(participants.name, name)).limit(1);
-    return result[0];
+    const nameLower = name.toLowerCase();
+    
+    // Get all participants and check names and alternative names
+    const allParticipants = await this.getParticipants();
+    
+    for (const participant of allParticipants) {
+      if (participant.name.toLowerCase() === nameLower) {
+        return participant;
+      }
+      
+      // Check alternative names
+      if (participant.alternativeNames && Array.isArray(participant.alternativeNames)) {
+        for (const altName of participant.alternativeNames) {
+          if (altName.toLowerCase() === nameLower) {
+            return participant;
+          }
+        }
+      }
+    }
+    
+    return undefined;
   }
 
   async addParticipant(participant: InsertParticipant): Promise<Participant> {
@@ -205,32 +224,57 @@ export class DbStorage implements IStorage {
 
   // Initialization
   async seedInitialData(): Promise<void> {
-    // Check if we already have data
+    // Always reseed with latest participants
     const existingParticipants = await this.getParticipants();
-    if (existingParticipants.length > 0) {
-      return; // Already seeded
+    
+    // If we have different number of participants, clear and reseed
+    const expectedCount = 9;
+    if (existingParticipants.length === expectedCount) {
+      return; // Already seeded with correct participants
     }
 
-    // Seed initial participants (matching the original hardcoded list)
+    // Clear existing data - must clear draw results first due to FK constraints
+    if (existingParticipants.length > 0) {
+      // Clear all draw results first
+      const activeEvent = await this.getActiveEvent();
+      if (activeEvent) {
+        await this.clearDrawResults(activeEvent.id);
+      }
+      
+      // Then clear participants (but not from DB directly due to FK)
+      // Instead, recreate them by clearing the table at DB level
+      await db.delete(drawResults);
+      await db.delete(participants);
+    }
+
+    // Seed initial participants with alternative names
     const initialParticipants = [
-      { name: "Anna", email: null },
-      { name: "Marek", email: null },
-      { name: "Kasia", email: null },
-      { name: "Piotr", email: null },
-      { name: "Zofia", email: null },
+      { name: "Janek", alternativeNames: ["Jan", "Janusz"], email: null },
+      { name: "Zosia", alternativeNames: ["Zofia", "Zuzanna"], email: null },
+      { name: "Filip", alternativeNames: ["Piotr", "Fili"], email: null },
+      { name: "Kasia", alternativeNames: ["Katarzyna", "Katarzyna"], email: null },
+      { name: "Marysia", alternativeNames: ["Maria", "Marta"], email: null },
+      { name: "Szymek", alternativeNames: ["Szymon", "Szymonek"], email: null },
+      { name: "Kuba", alternativeNames: ["Jakub", "Kuба"], email: null },
+      { name: "Asia", alternativeNames: ["Małgorzata", "Joanna"], email: null },
+      { name: "Beata", alternativeNames: ["Bea", "Beatrice"], email: null },
     ];
 
     for (const p of initialParticipants) {
-      await this.addParticipant(p);
+      await this.addParticipant(p as InsertParticipant);
     }
 
-    // Create initial event for current year
+    // Create or update initial event for current year
     const currentYear = new Date().getFullYear();
-    await this.createEvent({
-      name: `Mikołajki ${currentYear}`,
-      year: currentYear,
-      isActive: true,
-    });
+    const existingEvent = await this.getActiveEvent();
+    
+    if (!existingEvent) {
+      await this.createEvent({
+        name: `Mikołajki ${currentYear}`,
+        year: currentYear,
+        isActive: true,
+      });
+    }
   }
 }
 

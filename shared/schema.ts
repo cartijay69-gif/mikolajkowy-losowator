@@ -17,6 +17,7 @@ export const participants = pgTable("participants", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }),
+  alternativeNames: varchar("alternative_names", { length: 255 }).array().default([]),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
