@@ -1,37 +1,79 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import type { DrawResult, DrawData } from "@shared/schema";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getParticipants(): Promise<string[]>;
+  getDrawResults(): Promise<DrawResult[]>;
+  setDrawResults(results: DrawResult[]): Promise<void>;
+  performDraw(): Promise<DrawResult[]>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private data: DrawData;
 
   constructor() {
-    this.users = new Map();
+    this.data = {
+      participants: ["Anna", "Marek", "Kasia", "Piotr", "Zofia"],
+      results: [],
+    };
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getParticipants(): Promise<string[]> {
+    return [...this.data.participants];
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getDrawResults(): Promise<DrawResult[]> {
+    return [...this.data.results];
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async setDrawResults(results: DrawResult[]): Promise<void> {
+    this.data.results = results;
+  }
+
+  async performDraw(): Promise<DrawResult[]> {
+    const participants = await this.getParticipants();
+    
+    if (participants.length < 2) {
+      throw new Error("Need at least 2 participants to perform draw");
+    }
+
+    let shuffled: string[];
+    let attempts = 0;
+    const maxAttempts = 1000;
+
+    do {
+      shuffled = this.shuffleArray([...participants]);
+      attempts++;
+      
+      if (attempts > maxAttempts) {
+        throw new Error("Could not find valid draw after maximum attempts");
+      }
+    } while (this.hasPersonDrawnThemselves(participants, shuffled));
+
+    const results: DrawResult[] = participants.map((person, index) => ({
+      drew: person,
+      drawsFor: shuffled[index],
+    }));
+
+    await this.setDrawResults(results);
+    return results;
+  }
+
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  private hasPersonDrawnThemselves(original: string[], shuffled: string[]): boolean {
+    for (let i = 0; i < original.length; i++) {
+      if (original[i] === shuffled[i]) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 

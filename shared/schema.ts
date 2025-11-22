@@ -1,18 +1,27 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+export const participantSchema = z.object({
+  name: z.string().min(1, "Name is required"),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const drawResultSchema = z.object({
+  drew: z.string(),
+  drawsFor: z.string(),
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export const checkResultSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+});
+
+export type Participant = z.infer<typeof participantSchema>;
+export type DrawResult = z.infer<typeof drawResultSchema>;
+export type CheckResult = z.infer<typeof checkResultSchema>;
+
+export interface DrawData {
+  participants: string[];
+  results: DrawResult[];
+}
+
+export interface CheckResultResponse {
+  drawsFor: string;
+}
