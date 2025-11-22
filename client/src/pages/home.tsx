@@ -8,57 +8,11 @@ import { Card } from "@/components/ui/card";
 import type { CheckResultResponse } from "@shared/schema";
 import { Gift, Sparkles, TreePine, AlertCircle, Snowflake, Users } from "lucide-react";
 
-// Confetti particle component
-const Confetti = () => {
-  const colors = [
-    "hsl(0 0% 100%)",      // White
-    "hsl(355 85% 50%)",    // Red
-  ];
-
-  const confetti = Array.from({ length: 50 }).map((_, i) => {
-    const isRectangle = Math.random() > 0.6;
-    return {
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 0.3,
-      duration: 5 + Math.random() * 2,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      isRectangle,
-      width: isRectangle ? 3 + Math.random() * 4 : 4 + Math.random() * 3,
-      height: isRectangle ? 6 + Math.random() * 4 : 4 + Math.random() * 3,
-    };
-  });
-
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
-      {confetti.map((item) => (
-        <div
-          key={item.id}
-          className="absolute animate-confetti-fall"
-          style={{
-            left: `${item.left}%`,
-            top: "-20px",
-            width: `${item.width}px`,
-            height: `${item.height}px`,
-            backgroundColor: item.color,
-            borderRadius: item.isRectangle ? "2px" : "50%",
-            animationDelay: `${item.delay}s`,
-            animationDuration: `${item.duration}s`,
-            boxShadow: `0 0 ${Math.random() * 8}px ${item.color}`,
-            opacity: 0.8,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
 export default function Home() {
   const [name, setName] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
 
   // Fetch participants list
@@ -87,8 +41,6 @@ export default function Home() {
       setResult(data.drawsFor);
       setError(null);
       setShowResult(true);
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 3000);
     },
     onError: (err: any) => {
       setError(err.message || "Nie ma Cię na liście uczestników.");
@@ -110,8 +62,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-background to-accent/5 relative overflow-hidden">
-      {showConfetti && <Confetti />}
-      
       <div className="absolute inset-0 opacity-5 pointer-events-none text-primary hidden sm:block">
         <Snowflake className="absolute top-20 left-20 w-16 h-16 animate-pulse-subtle" />
         <Snowflake className="absolute top-40 right-32 w-14 h-14 animate-pulse-subtle" />
