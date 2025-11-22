@@ -11,11 +11,8 @@ import { Gift, Sparkles, TreePine, AlertCircle, Snowflake, Users } from "lucide-
 // Confetti particle component
 const Confetti = () => {
   const colors = [
-    "hsl(355 65% 55%)",    // Soft red
-    "hsl(142 35% 60%)",    // Soft green
-    "hsl(45 70% 55%)",     // Soft gold
-    "hsl(210 40% 55%)",    // Soft blue
-    "hsl(290 30% 50%)",    // Soft purple
+    "hsl(0 0% 100%)",      // White
+    "hsl(355 85% 50%)",    // Red
   ];
 
   const confetti = Array.from({ length: 60 }).map((_, i) => {

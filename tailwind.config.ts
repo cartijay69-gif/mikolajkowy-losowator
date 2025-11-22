@@ -133,8 +133,8 @@ export default {
           "0%": { transform: "translateY(-10px) translateX(0) rotate(0deg)", opacity: "1" },
           "25%": { transform: "translateY(25vh) translateX(60px) rotate(180deg)", opacity: "1" },
           "50%": { transform: "translateY(50vh) translateX(-40px) rotate(360deg)", opacity: "1" },
-          "75%": { transform: "translateY(75vh) translateX(80px) rotate(540deg)", opacity: "0.8" },
-          "100%": { transform: "translateY(100vh) translateX(0) rotate(720deg)", opacity: "0" },
+          "75%": { transform: "translateY(150vh) translateX(80px) rotate(540deg)", opacity: "0.9" },
+          "100%": { transform: "translateY(200vh) translateX(0) rotate(720deg)", opacity: "0" },
         },
         "pulse-glow": {
           "0%, 100%": { boxShadow: "0 0 0 0 rgba(219, 39, 119, 0.4)" },
