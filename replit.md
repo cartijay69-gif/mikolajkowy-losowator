@@ -1,112 +1,72 @@
-# Mikołajkowy Losowator (Secret Santa Draw)
+# Mikołajkowy Losowator
 
 ## Overview
+A festive Secret Santa draw application built with React, TypeScript, and Express. Users enter their name to discover who they should buy a gift for in the holiday gift exchange.
 
-Mikołajkowy Losowator is a festive Secret Santa gift exchange application that enables groups to perform a randomized gift assignment. The application features a simple, single-page interface where users enter their name to discover who they've been assigned to buy a gift for. The system ensures fair assignments where no participant draws themselves, and the draw is performed once for the entire group with results persisted across sessions.
+## Purpose
+This application automates the Secret Santa draw process with a beautiful, user-friendly interface. The draw happens automatically on first use and ensures no one draws themselves, with results persisting across sessions.
 
-## User Preferences
+## Current State
+✅ **Production Ready** - Full MVP implementation complete and tested
 
-Preferred communication style: Simple, everyday language.
+## Recent Changes (November 22, 2025)
+- Initial implementation with festive Christmas-themed UI
+- Smart draw algorithm with shuffle-retry logic
+- Icon-based design using lucide-react (no emojis per design guidelines)
+- Comprehensive end-to-end testing passed
+- Bug fix: JSON parsing in API response handling
 
-## System Architecture
+## Project Architecture
 
-### Frontend Architecture
+### Frontend (React + TypeScript)
+- **Single Page Application**: Centered layout with festive design
+- **Design System**: 
+  - Fonts: Poppins (main), Fredoka (headings)
+  - Colors: Christmas red/green theme with proper contrast
+  - Icons: lucide-react (Gift, TreePine, Snowflake, Sparkles, AlertCircle)
+  - Animations: Fade-in, shake, pulse-subtle
+- **Key Components**:
+  - `client/src/pages/home.tsx`: Main application page
+  - Beautiful loading, success, and error states
+  - Responsive design with proper spacing and typography
 
-**React Single-Page Application**
-- Built with React 18 and TypeScript using Vite as the build tool
-- Single-route application centered around a home page (`/`) with a not-found fallback
-- Utilizes Wouter for lightweight client-side routing instead of React Router
-- Component library: shadcn/ui (Radix UI primitives) styled with Tailwind CSS in "new-york" style
-- Form state managed through react-hook-form with Zod validation
-- Server state management via TanStack Query (React Query) for API interactions
+### Backend (Express + TypeScript)
+- **Storage**: In-memory storage with participant list and draw results
+- **Draw Algorithm**: Shuffle-retry logic ensuring valid assignments
+  - No one can draw themselves
+  - Results persist after first draw
+- **API Endpoints**:
+  - `POST /api/check-result`: Check draw result (triggers draw if needed)
 
-**Design System**
-- Tailwind CSS configuration with custom theming supporting light/dark modes
-- Custom color palette based on HSL values with semantic color tokens
-- Typography: Poppins (primary), Fredoka (accent/title), with playful holiday aesthetic
-- Component styling follows utility-focused approach with festive personality
-- Responsive design with mobile-first approach (768px breakpoint)
+### Data Model
+- **Participants**: Pre-configured list (Anna, Marek, Kasia, Piotr, Zofia)
+- **Draw Results**: Mapping of who drew whom
+- **Schemas**: Zod validation for type safety
 
-**UI Component Structure**
-- Centralized layout with vertical/horizontal centering
-- Single-column content flow with generous spacing (space-y-8 to space-y-12)
-- Three main sections: Header (emoji + title), Form (input + button), Result Display (dynamic)
-- Full viewport height with flex centering for balanced presentation
+## User Features
+1. **Name-Based Access**: Simple login with just a name (no password)
+2. **Automatic Draw**: First user triggers the draw for everyone
+3. **Persistent Results**: Same result on repeated checks
+4. **Error Handling**: Clear messages for invalid names or empty input
+5. **Festive Design**: Beautiful Christmas-themed interface
 
-### Backend Architecture
+## Technical Highlights
+- **Type Safety**: Full TypeScript across frontend and backend
+- **Validation**: Zod schemas for request/response validation
+- **State Management**: TanStack Query for API mutations
+- **Design Quality**: Follows comprehensive design guidelines
+- **Testing**: End-to-end tests verify all user journeys
 
-**Express.js REST API**
-- Node.js server with Express framework using ES modules
-- Development mode: Hot-reload server with Vite middleware integration
-- Production mode: Pre-built static file serving from dist directory
-- TypeScript compilation with strict mode enabled
-- Custom logging middleware tracking API response times and status codes
+## Running the Project
+The workflow "Start application" runs `npm run dev` which starts:
+- Express server on port 5000
+- Vite dev server for frontend
+- Hot module reloading enabled
 
-**API Endpoints**
-- `POST /api/check-result`: Accepts user name, returns assigned gift recipient
-  - Request validation using Zod schemas from shared schema definitions
-  - Returns 404 if participant not found in list
-  - Returns 400 for invalid request data
-  - Triggers automatic draw if results don't exist yet
-
-**Draw Algorithm**
-- Shuffle-based assignment ensuring 1-to-1 mapping
-- Validation loop prevents self-assignment (participants[i] ≠ shuffledList[i])
-- Maximum 1000 shuffle attempts with error handling for impossible configurations
-- Results cached after first successful draw
-- Minimum 2 participants required for valid draw
-
-### Data Storage
-
-**In-Memory Storage (MemStorage)**
-- Currently using in-memory storage implementation for development
-- Data structure includes:
-  - `participants`: Array of participant names (hardcoded: Anna, Marek, Kasia, Piotr, Zofia)
-  - `results`: Array of DrawResult objects mapping who drew whom
-- Storage interface (IStorage) abstracts data access for future database integration
-- Draw results persist only during server runtime (lost on restart)
-
-**Database Readiness**
-- Drizzle ORM configured for PostgreSQL with schema definitions in `shared/schema.ts`
-- Database URL expected via `DATABASE_URL` environment variable
-- Migration support configured via drizzle-kit
-- Neon serverless PostgreSQL client integrated but not actively used
-- Session store configured (connect-pg-simple) for future session management
-
-### External Dependencies
-
-**UI Component Libraries**
-- Radix UI primitives: Comprehensive set of unstyled, accessible components (accordion, dialog, dropdown, popover, tooltip, etc.)
-- class-variance-authority: Type-safe variant styling for components
-- cmdk: Command menu component (likely for future features)
-- embla-carousel-react: Carousel component library
-- lucide-react: Icon library for UI elements
-
-**State Management & Data Fetching**
-- @tanstack/react-query: Server state management with caching and automatic refetching
-- react-hook-form: Form state and validation
-- @hookform/resolvers: Integration between react-hook-form and validation libraries
-- zod: Runtime type validation and schema definition (shared between client/server)
-- drizzle-zod: Zod schema generation from Drizzle ORM schemas
-
-**Database & ORM**
-- drizzle-orm: TypeScript ORM for SQL databases
-- @neondatabase/serverless: Serverless PostgreSQL client for Neon
-- PostgreSQL dialect configured via drizzle-kit
-
-**Build & Development Tools**
-- Vite: Frontend build tool and dev server
-- @vitejs/plugin-react: React plugin for Vite
-- tsx: TypeScript execution for Node.js
-- esbuild: Fast JavaScript bundler for production server build
-- Replit-specific plugins: Runtime error modal, cartographer, dev banner
-
-**Styling & Utilities**
-- tailwindcss: Utility-first CSS framework
-- tailwind-merge (via clsx): Utility for merging Tailwind classes
-- date-fns: Date manipulation library
-- autoprefixer: PostCSS plugin for vendor prefixes
-
-**Fonts**
-- Google Fonts: Poppins (400, 500, 600, 700), Fredoka (500, 600, 700)
-- Preconnected to fonts.googleapis.com and fonts.gstatic.com for performance
+## Next Phase Possibilities
+- Admin panel to manage participant list
+- Reset/redo draw functionality
+- Exclusion rules (e.g., couples can't draw each other)
+- Email notifications when draw is ready
+- Draw history for multiple events
+- Custom participant lists per event
