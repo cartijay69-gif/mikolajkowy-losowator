@@ -8,6 +8,39 @@ import { Card } from "@/components/ui/card";
 import type { CheckResultResponse } from "@shared/schema";
 import { Gift, Sparkles, TreePine, AlertCircle, Snowflake, Users } from "lucide-react";
 
+// Snow animation component for result reveal
+const SnowAnimation = () => {
+  const snowflakes = Array.from({ length: 30 }).map((_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.3,
+    duration: 2 + Math.random() * 0.5,
+    size: 4 + Math.random() * 8,
+  }));
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-40">
+      {snowflakes.map((item) => (
+        <div
+          key={item.id}
+          className="absolute animate-snow-fall"
+          style={{
+            left: `${item.left}%`,
+            top: "-10px",
+            animationDelay: `${item.delay}s`,
+            animationDuration: `${item.duration}s`,
+          }}
+        >
+          <Snowflake
+            className="text-accent-foreground/60"
+            style={{ width: `${item.size}px`, height: `${item.size}px` }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export default function Home() {
   const [name, setName] = useState("");
   const [result, setResult] = useState<string | null>(null);
@@ -62,6 +95,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-background to-accent/5 relative overflow-hidden">
+      {showResult && result && <SnowAnimation />}
+      
       <div className="absolute inset-0 opacity-5 pointer-events-none text-primary hidden sm:block">
         <Snowflake className="absolute top-20 left-20 w-16 h-16 animate-pulse-subtle" />
         <Snowflake className="absolute top-40 right-32 w-14 h-14 animate-pulse-subtle" />
