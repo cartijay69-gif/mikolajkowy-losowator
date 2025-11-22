@@ -131,8 +131,9 @@ export default {
         },
         "snow-fall": {
           "0%": { transform: "translateY(-10px) translateX(0) rotate(0deg)", opacity: "1" },
-          "50%": { transform: "translateY(50vh) translateX(30px) rotate(180deg)", opacity: "0.8" },
-          "100%": { transform: "translateY(100vh) translateX(0) rotate(360deg)", opacity: "0" },
+          "30%": { opacity: "1" },
+          "80%": { opacity: "0.9" },
+          "100%": { transform: "translateY(100vh) translateX(20px) rotate(360deg)", opacity: "0" },
         },
         "pulse-glow": {
           "0%, 100%": { boxShadow: "0 0 0 0 rgba(219, 39, 119, 0.4)" },

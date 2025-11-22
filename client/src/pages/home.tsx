@@ -10,12 +10,12 @@ import { Gift, Sparkles, TreePine, AlertCircle, Snowflake, Users } from "lucide-
 
 // Snow animation component for result reveal
 const SnowAnimation = () => {
-  const snowflakes = Array.from({ length: 30 }).map((_, i) => ({
+  const snowflakes = Array.from({ length: 60 }).map((_, i) => ({
     id: i,
     left: Math.random() * 100,
-    delay: Math.random() * 0.3,
-    duration: 2 + Math.random() * 0.5,
-    size: 4 + Math.random() * 8,
+    delay: Math.random() * 0.2,
+    duration: 2.2 + Math.random() * 0.3,
+    size: 8 + Math.random() * 16,
   }));
 
   return (
@@ -32,7 +32,7 @@ const SnowAnimation = () => {
           }}
         >
           <Snowflake
-            className="text-accent-foreground/60"
+            className="text-accent-foreground/90"
             style={{ width: `${item.size}px`, height: `${item.size}px` }}
           />
         </div>
