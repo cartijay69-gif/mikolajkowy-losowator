@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -10,25 +10,44 @@ import { Gift, Sparkles, TreePine, AlertCircle, Snowflake, Users } from "lucide-
 
 // Confetti particle component
 const Confetti = () => {
-  const confetti = Array.from({ length: 30 }).map((_, i) => ({
-    id: i,
-    left: Math.random() * 100,
-    delay: Math.random() * 0.3,
-    duration: 2 + Math.random() * 1,
-  }));
+  const colors = [
+    "hsl(355 78% 45%)",    // Red
+    "hsl(142 12% 90%)",    // Green
+    "hsl(45 93% 47%)",     // Gold
+    "hsl(204 86% 53%)",    // Blue
+    "hsl(291 64% 42%)",    // Purple
+  ];
+
+  const confetti = Array.from({ length: 60 }).map((_, i) => {
+    const isRectangle = Math.random() > 0.6;
+    return {
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 0.5,
+      duration: 3.5 + Math.random() * 1.5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      isRectangle,
+      width: isRectangle ? 3 + Math.random() * 4 : 4 + Math.random() * 3,
+      height: isRectangle ? 6 + Math.random() * 4 : 4 + Math.random() * 3,
+    };
+  });
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
       {confetti.map((item) => (
         <div
           key={item.id}
-          className="absolute w-2 h-2 rounded-full animate-confetti-fall"
+          className="absolute animate-confetti-fall"
           style={{
             left: `${item.left}%`,
-            top: "-10px",
-            backgroundColor: Math.random() > 0.5 ? "hsl(355 78% 45%)" : "hsl(142 12% 90%)",
+            top: "-20px",
+            width: `${item.width}px`,
+            height: `${item.height}px`,
+            backgroundColor: item.color,
+            borderRadius: item.isRectangle ? "2px" : "50%",
             animationDelay: `${item.delay}s`,
             animationDuration: `${item.duration}s`,
+            boxShadow: `0 0 ${Math.random() * 10}px ${item.color}`,
           }}
         />
       ))}
