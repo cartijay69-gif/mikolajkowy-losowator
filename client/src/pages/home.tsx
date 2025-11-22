@@ -15,13 +15,13 @@ const Confetti = () => {
     "hsl(355 85% 50%)",    // Red
   ];
 
-  const confetti = Array.from({ length: 60 }).map((_, i) => {
+  const confetti = Array.from({ length: 50 }).map((_, i) => {
     const isRectangle = Math.random() > 0.6;
     return {
       id: i,
       left: Math.random() * 100,
-      delay: Math.random() * 0.5,
-      duration: 3.5 + Math.random() * 1.5,
+      delay: Math.random() * 0.3,
+      duration: 5 + Math.random() * 2,
       color: colors[Math.floor(Math.random() * colors.length)],
       isRectangle,
       width: isRectangle ? 3 + Math.random() * 4 : 4 + Math.random() * 3,
