@@ -4,6 +4,9 @@ import { storage } from "./storage";
 import { checkResultSchema, type CheckResultResponse } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Seed initial data on startup
+  await storage.seedInitialData();
+
   app.post("/api/check-result", async (req, res) => {
     try {
       const validation = checkResultSchema.safeParse(req.body);
@@ -17,20 +20,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { name } = validation.data;
 
-      const participants = await storage.getParticipants();
-      if (!participants.includes(name)) {
+      // Get active event
+      const activeEvent = await storage.getActiveEvent();
+      if (!activeEvent) {
+        return res.status(500).json({ 
+          message: "No active event found" 
+        });
+      }
+
+      // Check if participant exists
+      const participant = await storage.getParticipantByName(name);
+      if (!participant) {
         return res.status(404).json({ 
           message: "Nie ma Cię na liście uczestników." 
         });
       }
 
-      let results = await storage.getDrawResults();
+      // Check if draw has been performed for this event
+      let results = await storage.getDrawResultsForEvent(activeEvent.id);
       
       if (results.length === 0) {
-        results = await storage.performDraw();
+        // Perform the draw
+        await storage.performDraw(activeEvent.id);
+        results = await storage.getDrawResultsForEvent(activeEvent.id);
       }
 
-      const userResult = results.find(r => r.drew === name);
+      // Find user's result
+      const userResult = results.find(r => r.participantId === participant.id);
       
       if (!userResult) {
         return res.status(500).json({ 
@@ -39,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const response: CheckResultResponse = {
-        drawsFor: userResult.drawsFor,
+        drawsFor: userResult.drawsFor.name,
       };
 
       res.json(response);
