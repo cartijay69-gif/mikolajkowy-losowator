@@ -11,11 +11,11 @@ import { Gift, Sparkles, TreePine, AlertCircle, Snowflake, Users } from "lucide-
 // Confetti particle component
 const Confetti = () => {
   const colors = [
-    "hsl(355 78% 45%)",    // Red
-    "hsl(142 12% 90%)",    // Green
-    "hsl(45 93% 47%)",     // Gold
-    "hsl(204 86% 53%)",    // Blue
-    "hsl(291 64% 42%)",    // Purple
+    "hsl(355 65% 55%)",    // Soft red
+    "hsl(142 35% 60%)",    // Soft green
+    "hsl(45 70% 55%)",     // Soft gold
+    "hsl(210 40% 55%)",    // Soft blue
+    "hsl(290 30% 50%)",    // Soft purple
   ];
 
   const confetti = Array.from({ length: 60 }).map((_, i) => {
@@ -33,7 +33,7 @@ const Confetti = () => {
   });
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
       {confetti.map((item) => (
         <div
           key={item.id}
@@ -47,7 +47,8 @@ const Confetti = () => {
             borderRadius: item.isRectangle ? "2px" : "50%",
             animationDelay: `${item.delay}s`,
             animationDuration: `${item.duration}s`,
-            boxShadow: `0 0 ${Math.random() * 10}px ${item.color}`,
+            boxShadow: `0 0 ${Math.random() * 8}px ${item.color}`,
+            opacity: 0.8,
           }}
         />
       ))}
