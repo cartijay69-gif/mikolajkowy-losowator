@@ -7,6 +7,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Seed initial data on startup
   await storage.seedInitialData();
 
+  // Get all participants
+  app.get("/api/participants", async (req, res) => {
+    try {
+      const participants = await storage.getParticipants();
+      const names = participants.map(p => p.name).sort();
+      res.json(names);
+    } catch (error) {
+      console.error("Error in /api/participants:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Internal server error" 
+      });
+    }
+  });
+
   app.post("/api/check-result", async (req, res) => {
     try {
       const validation = checkResultSchema.safeParse(req.body);
