@@ -1,0 +1,47 @@
+Wdrożenie nie powiodło się, ponieważ Twoja aplikacja serwerowa wymaga zmiennej środowiskowej DATABASE_URL, która nie została ustawiona w konfiguracji platformy Render.
+
+Komunikat o błędzie jest jasny:
+
+Error: DATABASE_URL must be set
+
+Oznacza to, że Twój skompilowany plik serwera (dist/index.js) próbuje nawiązać połączenie z bazą danych na samym początku działania, ale nie znajduje niezbędnego ciągu połączenia (URL).
+
+🛠️ Jak rozwiązać problem
+
+Musisz dodać zmienną środowiskową DATABASE_URL do ustawień Twojej usługi na Render.
+
+1. Znajdź adres URL bazy danych
+
+Najpierw musisz uzyskać poprawny adres URL połączenia do Twojej bazy danych.
+
+    Jeśli używasz bazy danych w chmurze (np. Render Postgres, MongoDB Atlas, Supabase, itp.), musisz skopiować Connection String lub Database URL udostępniony przez tę usługę.
+
+    Ten adres URL zwykle zawiera nazwę użytkownika, hasło, host i nazwę bazy danych. Ma format podobny do: postgres://user:password@host:port/database_name
+
+2. Dodaj zmienną środowiskową na Render
+
+    Zaloguj się do swojego konta Render.
+
+    Przejdź do pulpitu nawigacyjnego (Dashboard) i wybierz swoją usługę Web Service (mikolajkii).
+
+    Przejdź do sekcji Environment (Środowisko) lub Settings (Ustawienia) i znajdź miejsce do zarządzania Environment Variables (Zmiennymi Środowiskowymi).
+
+    Dodaj nową zmienną:
+
+        Key (Klucz): DATABASE_URL
+
+        Value (Wartość): Wklej skopiowany adres URL połączenia bazy danych (z Kroku 1).
+
+3. Wdróż ponownie (Redeploy)
+
+Po zapisaniu zmiennej środowiskowej, Render automatycznie rozpocznie ponowne wdrożenie (lub będziesz musiał je uruchomić ręcznie). Tym razem, kiedy Twój serwer spróbuje się uruchomić i zażąda DATABASE_URL, system mu ją udostępni, a błąd powinien zniknąć.
+
+⚠️ Dodatkowe uwagi (Sukces kompilacji)
+
+Dobrze wiedzieć, że kompilacja (Build) zakończyła się sukcesem! 🎉
+
+==> Build successful 🎉
+
+Oznacza to, że wszystkie wcześniejsze problemy z poleceniami Build Command i Publish Directory zostały rozwiązane. Jesteś bardzo blisko sukcesu — teraz brakuje tylko dostępu do bazy danych.
+
+Czy potrzebujesz pomocy w zlokalizowaniu swojego adresu URL bazy danych?
